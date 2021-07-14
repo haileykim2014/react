@@ -1,12 +1,42 @@
 //헤더는 주로데이터바인딩보다는 메인
+import { Component } from "react";
 import {Link} from "react-router-dom";
-import SecurityContext from "../config/SecurityContext";
+import { connect } from "react-redux";
 
-const Header = ()=>{
+
+class Header extends Component{
+
+    constructor(){
+        super();
+        this.state = {
+            userName:null
+        };
+    }
+
+    // componentDidMount(){
+    //     store.subscribe(()=>{//스토어가 바뀌었어 ->구독하고있다가 화면갱신
+    //         //Header 컴포넌트
+    //         //this.setState({userName});
+    //         let {userName} = store.getState();
+    //         this.setState({userName});
+    //         console.log("Header subscribe");
+            
+    //     });
+    // }
+
+    logoutClick(e){
+        e.preventDefault();
+        this.props.logout();
+    }
+
+    render(){
+    
+    console.log("Header render");
 
     let loginState;
-    if(SecurityContext.userName)//유저네임이있으면
-        loginState = <Link to="/member/logout">로그아웃</Link>;
+
+    if(this.props.userName)//유저네임이있으면
+        loginState = <Link to="/member/logout" onClick={this.logoutClick.bind(this)}>로그아웃</Link>;
     else
         loginState = <Link to="/member/login">로그인</Link>;
 
@@ -71,7 +101,21 @@ const Header = ()=>{
 
     </div>
     
-</header>;
+</header>;}
 };
+//상태 값이 바뀌었는데 어떻게 할꺼야 ?
+const mapStateToProps=(state)=>{
+    return{
+        userName:state.userName
+    }
+}
+//당신이 로그인할때 또는 로그아웃 할때 dispatch 할것이 있어 ? 그럼 여기에 함수를 만들어서 호출해
+const mapDispatchProps=(dispatch)=>{
+    return{//디스패치할때 사용할 함수정의
+        logout:()=>{
+            dispatch({type:2});
+        }
+    }
+}
 
-export default Header;
+export default connect(mapStateToProps,mapDispatchProps)(Header);

@@ -1,7 +1,9 @@
 import { Component } from "react";
+import { connect } from "react-redux";
 import securityContext from "../../config/SecurityContext";
+import store from "../../reducers/AuthStore"
 
-export default class Login extends Component{
+class Login extends Component{
     constructor(props){
         super(props);
         
@@ -34,8 +36,11 @@ export default class Login extends Component{
             else if(member.pwd != `{noop}${pwd}`)
                 alert("아이디 또는 비밀번호가 올바르지 않습니다.");
             else{
-                securityContext.userName = uid;
-                securityContext.authorities = authorities;
+                //securityContext.userName = uid;
+                //securityContext.authorities = authorities;
+                //이 방식을 connect의 dispatch 영역의 함수를 이용하도록 변경
+                //store.dispatch({type:1,userName:uid});
+                this.props.login(uid);//커넥트라이브러리를쓰면
                 
                 let returnURL = "/index";
                 if(this.props.location.state != undefined)
@@ -108,3 +113,20 @@ export default class Login extends Component{
             </main>;
     }
 }
+
+//상태 값이 바뀌었는데 어떻게 할꺼야 ?
+const mapStateToProps=(state)=>{//subscribe역할
+    return{
+        userName:state.userName
+    }
+}
+//당신이 로그인할때 또는 로그아웃 할때 dispatch 할것이 있어 ? 그럼 여기에 함수를 만들어서 호출해
+const mapDispatchProps=(dispatch)=>{
+    return{//디스패치할때 사용할 함수정의
+        login:(uid)=>{
+            dispatch({type:1,userName:uid});
+        }
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchProps)(Login);
